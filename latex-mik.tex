@@ -1,0 +1,194 @@
+\documentclass[a4paper,draft,titlepage]{scrartcl}
+\setlength{\parskip}{1.1ex}
+\setlength{\parindent}{0mm}
+\usepackage[latin1]{inputenc}
+\usepackage{textcomp}
+
+\areaset[8mm]{17.0cm}{23.5cm}
+
+\newcommand{\HRule}{\rule[1ex]{\linewidth}{0.7mm}}
+\newcommand{\lm}{\LaTeX-Mik}
+
+\usepackage{url}
+\newcommand{\hoch}[1]{\raisebox{0.6ex}{#1}}
+\newcommand{\tief}[1]{\raisebox{-0.6ex}{#1}}
+\newcommand{\grad}{\ensuremath{^\circ}}
+\newcommand{\pfeil}{\ensuremath{\rightarrow}}
+
+\begin{document}
+
+\begin{titlepage}
+\raggedleft
+
+\vspace*{\stretch{3}}
+
+{ \Huge \sffamily
+\lm: \LaTeX-Support for GVim \\on Win32-systems
+\HRule \par}
+
+{
+ \Large  \sffamily
+v0.5, December 26, 2003
+
+}
+{ \huge   \sffamily
+Volker Kiefel
+\par}
+
+
+
+\vspace*{\stretch{8}}
+
+\end{titlepage}
+
+\begin{abstract}
+\textbf{Abstract:}
+Vim, one of the most complex text editors is also available on win32 systems.
+Vim has excellent syntax highlighting for \LaTeX{} and Bib\TeX{} files. \lm{}
+has been written for GVim, the graphical version of Vim. It supports authors
+using Mik\TeX, a popular win32 \TeX/\LaTeX-implementation. Only minor changes
+of the script are required to make it suitable for other \TeX{}
+implementations, e.\,g. \texttt{fptex}.
+\end{abstract}
+
+\section{System requirements}
+
+At least, installation of MikTeX\footnote{\url{http://wwww.miktex.org}} 
+on a win32-system including \textbf{pdf\LaTeX} and
+\textbf{dvips} is 
+required. For converting \LaTeX-documents to HTML the script calls
+\textbf{tth}\footnote{\url{http://hutchinson.belmont.ma.us/tth/}}. For
+printing PostScript documents \textbf{Ghostview} and \textbf{Ghostscript}
+should be installed.
+
+\section{Installation}
+
+Please copy the file \texttt{latex-mik.vim} into the \texttt{vim}
+plugin-directory. If you open a file with the extension \texttt{.tex}
+or\texttt{.bib}, the \LaTeX-menu appears.
+
+\section{\LaTeX-menu options}
+
+\subsection{Bib\TeX Entry}
+
+\begin{sloppypar}
+The Options of this menu insert empty templates for Bib\TeX{} document types
+into a \texttt{.bib} file\footnote{A Bib\TeX{} database usually has the
+filename extension \texttt{.bib}}. Thus \texttt{LaTeX\pfeil BibTeX\pfeil
+Article} inserts
+
+\end{sloppypar}
+
+\begin{verbatim}
+  @article{,
+  author = {},
+  title = {},
+  year = {},
+  journal = {},
+  OPTpages = {},
+  OPTvolume = {},
+  OPTmonth = {},
+  OPTnumber = {}
+  }
+\end{verbatim}
+
+into the text: the template for \verb+@article+-entries. Fields beginning with
+\texttt{OPT...} are optional in the context of this document type. The last
+field of a well-formed \texttt{.bib}-file is not closed by a comma (,). Also
+the other document types: book, booklet, inbook, incollection, inproceedings,
+manual, mastersthesis, misc, phdthesis, proceedings, techreport, unpublished
+are implemented.
+
+\subsection{Environment on region, Empty environment}
+
+\texttt{LaTeX\pfeil Environment on region} only works if a region is
+selected ``linewise visual'' (with `V' in Vim's command mode). With a region
+selected ``characterwise visual'' (`v') the script generates the error message: ``No
+text highlighted linewise''. To use this command, select a region of lines
+with `V' and enter the name of the environment ant the prompt, e.\,g.
+\texttt{center}. \texttt{LaTeX\pfeil Empty environment} generates an empty
+environment. As an example, \texttt{center} inserts
+
+\begin{verbatim}
+  \begin{center}
+  
+  \end{center}
+\end{verbatim}
+
+\texttt{itemize} inserts
+
+\begin{verbatim}
+  \begin{itemize}
+    \item 
+  \end{itemize}
+\end{verbatim}
+
+
+\subsection{Commands on region, Empty Commands}
+
+\texttt{LaTeX\pfeil Commands on region} only works if a region is selected
+``characterwise visual'', with a region selected ``linewise visual'', the
+script generates the message ``No text highlighted characterwise''.
+\texttt{LaTeX\pfeil Empty commands} generates an empty command.
+
+
+\subsection{Umlaute}
+
+\begin{sloppypar}
+In \LaTeX-documents ``Umlaut''-characters (‰ˆ¸ƒ÷‹) and `ﬂ' are inserted
+literally by default. If you select \texttt{LaTeX\pfeil Umlaute\pfeil Normal
+TeX}, typing \texttt{‰} inserts \verb+\"a+. Default behaviour is restored with
+\texttt{LaTeX\pfeil Umlaute\pfeil Normal TeX}. 
+\texttt{LaTeX\pfeil Umlaute\pfeil German TeX mapping} prints \verb+"a+ for a
+typed \verb+‰+, \texttt{LaTeX\pfeil Umlaute\pfeil BibTeX mapping} prints 
+\verb+{\"a}+, 
+\texttt{LaTeX\pfeil Umlaute\pfeil German Umlaut mapping}
+converts \verb+‰+ to \verb+ae+.  
+\end{sloppypar}
+
+
+
+\subsection{Process \LaTeX-projects}
+
+In the following description, a \LaTeX-project is understood either as a
+single \LaTeX-file (together with a \texttt{.bib}-file, if it exists) or as
+the main file and the files included with \verb+\input{}+ or \verb+\include{}+
+commands as in
+
+\begin{verbatim}
+   \documentclass{article}
+   \begin{document}
+
+   \input{fileOne}
+   \input{fileTwo}
+   \input{fileThree}
+
+   \end{document}
+\end{verbatim}
+
+After opening one of the files of a project and before \LaTeX ing and/or viewing
+the project you will have to tell the script the project name, therefore
+select \texttt{LaTeX\pfeil Projectname}. If you are currently editing the main
+file, you may confirm the prompt (\texttt{Enter project name [default current
+  file]:}) with [Enter], if another file of the project is edited you will
+have to enter the name of the main file without the extension\footnote{if the
+  main file is \texttt{myfile.tex}, please enter \texttt{myfile}; generally the
+  main file is the \TeX{} file with the \texttt{\textbackslash 
+  documentclass{}} statement}. 
+Then, with \texttt{LaTeX\pfeil LaTeXProject} you will compile the project
+(produce a \texttt{.dvi}-file), 
+\texttt{LaTeX\pfeil BibTeXProject} runs Bib\TeX,
+\texttt{LaTeX\pfeil IndexProject} runs \texttt{makeindex},
+\texttt{LaTeX\pfeil ViewFile} calls the dvi-viewer \texttt{yap} and makes it
+jump to the correct position,
+\texttt{LaTeX\pfeil PDFLaTeX} calls PDF\LaTeX\ to produce a PDF-file,
+\texttt{LaTeX\pfeil dvips} calls \texttt{dvips} to produce a PostScript file,
+\texttt{LaTeX\pfeil gsview} opens the grahical interface of the
+ghostscript-interpreter, 
+\texttt{LaTeX\pfeil LaTeX to HTML} generates a HTML file with
+tth\footnote{available through \url{http://hutchinson.belmont.ma.us/tth/}}. 
+
+
+
+\end{document}
+

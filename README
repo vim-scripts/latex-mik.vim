@@ -1,0 +1,18 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=849
+
+This script adds a menu for LaTeX-related functions for .tex, .bib-files
+
+To process multiple file LaTeX-projects, enter the project name (e.g.
+``myproject'') at the prompt, if ``myproject.tex'' is the main file.
+
+Menu options address:
+
+  (pdf)latex
+  bibtex
+  makeindex
+  yap (dvi-viewer)
+  dvips
+  gsview32
+  tth
+
+Latex-mik supports entering commands and environments.
