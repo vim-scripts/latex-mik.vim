@@ -1,6 +1,8 @@
 " 
-" latex-mik.vim -- LaTeX support (MikTeX) for GVIM on Win32-systems -- v0.5 
-" Copyright (C) 2003 Volker Kiefel 
+" File:    latex-mik.vim
+" Purpose: LaTeX support (MikTeX) for GVIM on Win32-systems 
+" Version: 0.6
+" Author:  Volker Kiefel <volker dot kiefel at freenet dot de>
 "
 " Documentation of this script may be found in latex-mik.pdf, source of
 " documentation: latex-mik.tex.
@@ -13,6 +15,7 @@
 " Usage:
 " To process multiple file LaTeX-projects, enter the project name (e.g.
 " ``myproject'') at the prompt, if ``myproject.tex'' is the main file.
+"
 " Menu options address 
 "
 "   (pdf)latex
@@ -23,15 +26,20 @@
 "   gsview32
 "   tth
 "
+" Latex-mik supports entering commands, environments and BibTeX entries.
+"
 " This script is distributed in the hope that it will be useful,
 " but WITHOUT ANY WARRANTY; without even the implied warranty of
 " MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 "
-" v0.1: initial upload
+" V0.1: initial upload
 " v0.2: unused code removed
 " v0.3: BibTeX document type unpublished corrected
 " v0.4: Documentation added
 " v0.5: Documentation corrected
+" v0.6: Environment definitions completed; the most important commands have
+"       mapped to `,la' (LaTeXProject) `,vi' (ViewFile) etc.; documentation
+"       updated
 "
 
 :function! Standard_map()
@@ -190,10 +198,16 @@
    :endif
    :put!=ausgabe
  :elseif umgebung == "tabular"
-   :let ausgabe = "\\begin{".umgebung."}{}\n\n\\end{".umgebung."}"
+   :let ausgabe = "\\begin{".umgebung."}[]{}\n\n\\end{".umgebung."}"
+   :put!=ausgabe
+ :elseif umgebung == "array"
+   :let ausgabe = "\\begin{".umgebung."}[]{}[]\n\n\\end{".umgebung."}"
    :put!=ausgabe
  :elseif umgebung == "table" || umgebung == "figure"
    :let ausgabe = "\\begin{".umgebung."}[]\n\n  \\caption[]{}\n  \\label{}\n\\end{".umgebung."}"
+   :put!=ausgabe
+ :elseif umgebung == "theorem"
+   :let ausgabe = "\\begin{".umgebung."}{}[]\n\n\\end{".umgebung."}"
    :put!=ausgabe
  :else
    :let ausgabe = "\\begin{".umgebung."}\n\n\\end{".umgebung."}"
@@ -226,11 +240,17 @@
      :let tail = "\n\\end{".umgebung."}"
    :endif
  :elseif umgebung == "tabular"
-   :let head = "\\begin{".umgebung."}{}\n"
+   :let head = "\\begin{".umgebung."}[]{}\n"
+   :let tail = "\n\\end{".umgebung."}"
+ :elseif umgebung == "array"
+   :let head = "\\begin{".umgebung."}[]{}[]\n"
    :let tail = "\n\\end{".umgebung."}"
  :elseif umgebung == "table" || umgebung == "figure"
    :let head = "\\begin{".umgebung."}[]\n"
    :let tail = "\n  \\caption[]{}\n  \\label{}\n\\end{".umgebung."}"
+ :elseif umgebung == "theorem"
+   :let head = "\\begin{".umgebung."}{}[]\n"
+   :let tail = "\n\\end{".umgebung."}"
  :else
    :let head = "\\begin{".umgebung."}\n"
    :let tail = "\n\\end{".umgebung."}"
@@ -337,10 +357,10 @@ menu 8000.10.100 &LaTeX.BibTeXE&ntry.P&roceedings    i@proceedings{,<cr>title = 
 menu 8000.10.110 &LaTeX.BibTeXE&ntry.Te&chreport     i@techreport{,<cr>title = {},<cr>author = {},<cr>institution = {},<cr>year = {},<cr>OPTtype = {},<cr>OPTnumber = {},<cr>OPTaddress = {},<cr>OPTmonth = {},<cr>OPTnote = {}<cr>}<cr>
 menu 8000.10.120 &LaTeX.BibTeXE&ntry.&Unpublished    i@unpublished{,<cr>author = {},<cr>title = {},<cr>OPTmonth = {},<cr>OPTyear = {},<cr>note = {}<cr>}<cr>
 menu 8000.10.900 &LaTeX.-sep1-                       <nul>
-vmenu 8000.20     &LaTeX.&Environment\ on\ Region    <Esc> :call Plain_env()<cr>
-nmenu 8000.22     &LaTeX.Empty\ &Environment         :call Empty_env()<cr>
-vmenu 8000.25     &LaTeX.&Commands\ on\ Region       <Esc> :call Plain_com()<cr>
-nmenu 8000.25     &LaTeX.Empty\ &Commands            :call Empty_com()<cr>
+vmenu 8000.20     &LaTeX.&Environment\ on\ Region<tab>,ren    <Esc> :call Plain_env()<cr>
+nmenu 8000.22     &LaTeX.Empty\ &Environment<tab>,en          :call Empty_env()<cr>
+vmenu 8000.25     &LaTeX.&Commands\ on\ Region<tab>,rcm       <Esc> :call Plain_com()<cr>
+nmenu 8000.25     &LaTeX.Empty\ &Commands<tab>,cm             :call Empty_com()<cr>
 menu 8000.28.010 &LaTeX.-sep2-                       <nul>
 menu 8000.40.020 &LaTeX.&Umlaute.Normal\ &TeX        :call Standard_map()<cr>
 menu 8000.40.030 &LaTeX.&Umlaute.&No\ mapping        :call Remove_map()<cr>
@@ -348,20 +368,44 @@ menu 8000.40.040 &LaTeX.&Umlaute.&German\ TeX\ mapping    :call German_map()<cr>
 menu 8000.40.050 &LaTeX.&Umlaute.&BibTeX\ mapping    :call Bibtex_map()<cr>
 menu 8000.40.070 &LaTeX.&Umlaute.German\ &Umlaut\ mapping   :call Deutsche_umschreibungen_map()<cr>
 menu 8000.50.010 &LaTeX.-sep4-                       <nul>
-menu 8000.60     &LaTeX.&LaTeXProject                :call ExeLatex()<cr>
+menu 8000.60     &LaTeX.&LaTeXProject<tab>,la        :call ExeLatex()<cr>
 menu 8000.61     &LaTeX.&BibTeXProject               :call ExeBibtex()<cr><Space>
 menu 8000.62     &LaTeX.&IndexProject                :call ExeMakeindex()<cr><Space>
-menu 8000.70     &LaTeX.&ViewFile                    :call ExeYap()<cr>
+menu 8000.70     &LaTeX.&ViewFile<tab>,vi            :call ExeYap()<cr>
 menu 8000.75     &LaTeX.&PDFLaTeX                    :call ExePDFLaTeX()<cr>
 menu 8000.80     &LaTeX.&dvips                       :call Exedvips()<cr><Space>
 menu 8000.83     &LaTeX.&gsview                      :call Exegsv()<cr><Space>
 menu 8000.85     &LaTeX.LaTeX\ to\ &HTML             :call Exetohtml()<cr><Space>
-menu 8000.90     &LaTeX.Projec&tname                 :call GetProjName()<cr>
+menu 8000.90     &LaTeX.Projec&tname<tab>,pr      :call GetProjName()<cr>
 endfunction
 
+:function! LatexUnMap()
+  unmap ,la
+  unmap ,vi
+  unmap ,pr
+  vunmap ,ren
+  unmap ,en
+  vunmap ,rcm
+  unmap ,cm
+:endfunction
 
+
+:function! LatexMap()
+  map ,la     :call ExeLatex()<cr>
+  map ,vi     :call ExeYap()<cr>
+  map ,pr    :call GetProjName()<cr>
+  vmap ,ren  <Esc> :call Plain_env()<cr>
+  map ,en   :call Empty_env()<cr>
+  vmap ,rcm  <Esc> :call Plain_com()<cr>
+  map ,cm   :call Empty_com()<cr>
+:endfunction
+
+
+set timeoutlen=2500
 :au BufEnter *.tex,*.dtx,*.ltx,*.bib :call LatexMenu()
 :au BufLeave *.tex,*.dtx,*.ltx,*.bib :call LatexUnMenu()
+:au BufEnter *.tex,*.dtx,*.ltx,*.bib :call LatexMap()
+:au BufLeave *.tex,*.dtx,*.ltx,*.bib :call LatexUnMap()
 " :au BufEnter *.tex,*.dtx,*.ltx :call Standard_map()
 " :au BufLeave *.tex,*.dtx,*.ltx :call Remove_map()
 :au BufEnter *.bib :call Bibtex_map()

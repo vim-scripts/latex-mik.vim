@@ -1,4 +1,4 @@
-\documentclass[a4paper,draft,titlepage]{scrartcl}
+\documentclass[a4paper,draft,titlepage,abstracton]{scrartcl}
 \setlength{\parskip}{1.1ex}
 \setlength{\parindent}{0mm}
 \usepackage[latin1]{inputenc}
@@ -28,7 +28,7 @@
 
 {
  \Large  \sffamily
-v0.5, December 26, 2003
+v0.6, January 18, 2004
 
 }
 { \huge   \sffamily
@@ -42,7 +42,7 @@ Volker Kiefel
 \end{titlepage}
 
 \begin{abstract}
-\textbf{Abstract:}
+
 Vim, one of the most complex text editors is also available on win32 systems.
 Vim has excellent syntax highlighting for \LaTeX{} and Bib\TeX{} files. \lm{}
 has been written for GVim, the graphical version of Vim. It supports authors
@@ -101,13 +101,14 @@ are implemented.
 
 \subsection{Environment on region, Empty environment}
 
-\texttt{LaTeX\pfeil Environment on region} only works if a region is
-selected ``linewise visual'' (with `V' in Vim's command mode). With a region
-selected ``characterwise visual'' (`v') the script generates the error message: ``No
+\texttt{LaTeX\pfeil Environment on region} only works if a region is selected
+``linewise visual'' (with `V' in Vim's command mode). With a region selected
+``characterwise visual'' (`v') the script generates the error message: ``No
 text highlighted linewise''. To use this command, select a region of lines
 with `V' and enter the name of the environment ant the prompt, e.\,g.
 \texttt{center}. \texttt{LaTeX\pfeil Empty environment} generates an empty
-environment. As an example, \texttt{center} inserts
+environment. \lm{} attempts to create ``appropriate'' environment templates.
+As an example, ``\texttt{center}'' inserts
 
 \begin{verbatim}
   \begin{center}
@@ -115,12 +116,22 @@ environment. As an example, \texttt{center} inserts
   \end{center}
 \end{verbatim}
 
-\texttt{itemize} inserts
+``\texttt{itemize}'' inserts
 
 \begin{verbatim}
   \begin{itemize}
     \item 
   \end{itemize}
+\end{verbatim}
+
+and ``\texttt{table}'' inserts
+
+\begin{verbatim}
+  \begin{table}[]
+  
+    \caption[]{}
+    \label{}
+  \end{table}
 \end{verbatim}
 
 
@@ -132,7 +143,7 @@ script generates the message ``No text highlighted characterwise''.
 \texttt{LaTeX\pfeil Empty commands} generates an empty command.
 
 
-\subsection{Umlaute}
+\subsection{``Umlaut'' and accented characters}
 
 \begin{sloppypar}
 In \LaTeX-documents ``Umlaut''-characters (‰ˆ¸ƒ÷‹) and `ﬂ' are inserted
@@ -143,7 +154,9 @@ TeX}, typing \texttt{‰} inserts \verb+\"a+. Default behaviour is restored with
 typed \verb+‰+, \texttt{LaTeX\pfeil Umlaute\pfeil BibTeX mapping} prints 
 \verb+{\"a}+, 
 \texttt{LaTeX\pfeil Umlaute\pfeil German Umlaut mapping}
-converts \verb+‰+ to \verb+ae+.  
+converts \verb+‰+ to \verb+ae+. Mapping for accented and other
+characters might easily
+be added.
 \end{sloppypar}
 
 
@@ -188,7 +201,34 @@ ghostscript-interpreter,
 \texttt{LaTeX\pfeil LaTeX to HTML} generates a HTML file with
 tth\footnote{available through \url{http://hutchinson.belmont.ma.us/tth/}}. 
 
+\subsection{Mappings}
 
+Important funktions have been mapped to key sequences beginnung with
+``,''. 
+
+\begin{table}[h]
+
+\begin{center}
+\begin{tabular}{|ll|} \hline
+\textbf{Command} & \textbf{mapping} \\ \hline
+\texttt{\LaTeX Project} & \texttt{,la} \\
+\texttt{ViewFile} & \texttt{,vi} \\ 
+\texttt{Projectname} &  \texttt{,pr} \\
+\texttt{Empty Commands} & \texttt{,cm} \\
+\texttt{Commands on region} & \texttt{,rcm} \\
+\texttt{Empty environment} & \texttt{,en} \\
+\texttt{Environment on region} & \texttt{,ren} \\
+ \hline
+\end{tabular}
+\end{center}
+  \caption{Mappings of \lm-functions}
+  \label{maps}
+\end{table}
+
+For example, if you wish to \LaTeX{}
+the current project you may enter \texttt{,la} instead of selecting
+the menu option
+\texttt{\LaTeX Project}. All current mappings are listed in table \ref{maps}.
 
 \end{document}
 
