@@ -1,7 +1,7 @@
 " 
 " File:    latex-mik.vim
 " Purpose: LaTeX support (MikTeX) for GVIM on Win32-systems 
-" Version: 0.6
+" Version: 0.7
 " Author:  Volker Kiefel <volker dot kiefel at freenet dot de>
 "
 " Documentation of this script may be found in latex-mik.pdf, source of
@@ -40,6 +40,11 @@
 " v0.6: Environment definitions completed; the most important commands have
 "       mapped to `,la' (LaTeXProject) `,vi' (ViewFile) etc.; documentation
 "       updated
+" v0.7: Problem fixed: after opening TeX-related files with the gvim `File 
+"       Open...' dialog, the current working directory is now set 
+"       automatically. This change requires that all edited files of a 
+"       project are in the same directory.
+"       Some environments added.
 "
 
 :function! Standard_map()
@@ -183,7 +188,7 @@
  :if strlen(umgebung) == 0
    :echo "Environment aborted"
    :return
- :elseif umgebung == "itemize" || umgebung == "enumerate"
+ :elseif umgebung == "itemize" || umgebung == "enumerate" || umgebung == "citemize"
    :let ausgabe = "\\begin{".umgebung."}\n  \\item \n\\end{".umgebung."}"
    :put!=ausgabe
  :elseif umgebung == "description" 
@@ -200,6 +205,18 @@
  :elseif umgebung == "tabular"
    :let ausgabe = "\\begin{".umgebung."}[]{}\n\n\\end{".umgebung."}"
    :put!=ausgabe
+ :elseif umgebung == "columns"
+   :let ausgabe = "\\begin{".umgebung."}[]\n\n\\end{".umgebung."}"
+   :put!=ausgabe
+ :elseif umgebung == "column" || umgebung == "block"
+   :let ausgabe = "\\begin{".umgebung."}{}\n\n\\end{".umgebung."}"
+   :put!=ausgabe
+ :elseif umgebung == "picture"
+   :let ausgabe = "\\begin{".umgebung."}()\n\n\\end{".umgebung."}"
+   :put!=ausgabe
+ :elseif umgebung == "pspicture"
+   :let ausgabe = "\\begin{".umgebung."}()()\n\n\\end{".umgebung."}"
+   :put!=ausgabe
  :elseif umgebung == "array"
    :let ausgabe = "\\begin{".umgebung."}[]{}[]\n\n\\end{".umgebung."}"
    :put!=ausgabe
@@ -208,6 +225,9 @@
    :put!=ausgabe
  :elseif umgebung == "theorem"
    :let ausgabe = "\\begin{".umgebung."}{}[]\n\n\\end{".umgebung."}"
+   :put!=ausgabe
+ :elseif umgebung == "document"
+   :let ausgabe = "\\documentclass[]{}\n\n\\usepackage[]{}\n\n\\begin{".umgebung."}\n\n\\end{".umgebung."}"
    :put!=ausgabe
  :else
    :let ausgabe = "\\begin{".umgebung."}\n\n\\end{".umgebung."}"
@@ -224,7 +244,7 @@
  :if strlen(umgebung) == 0
    :echo "Environment aborted"
    :return
- :elseif umgebung == "itemize" || umgebung == "enumerate"
+ :elseif umgebung == "itemize" || umgebung == "enumerate" || umgebung == "citemize"
    :let head = "\\begin{".umgebung."}\n  \\item "
    :let tail = "\n\\end{".umgebung."}"
  :elseif umgebung == "description" 
@@ -241,6 +261,18 @@
    :endif
  :elseif umgebung == "tabular"
    :let head = "\\begin{".umgebung."}[]{}\n"
+   :let tail = "\n\\end{".umgebung."}"
+ :elseif umgebung == "columns"
+   :let head = "\\begin{".umgebung."}[]\n"
+   :let tail = "\n\\end{".umgebung."}"
+ :elseif umgebung == "column" || umgebung == "block"
+   :let head = "\\begin{".umgebung."}{}\n"
+   :let tail = "\n\\end{".umgebung."}"
+ :elseif umgebung == "picture"
+   :let head = "\\begin{".umgebung."}()\n"
+   :let tail = "\n\\end{".umgebung."}"
+ :elseif umgebung == "pspicture"
+   :let head = "\\begin{".umgebung."}()()\n"
    :let tail = "\n\\end{".umgebung."}"
  :elseif umgebung == "array"
    :let head = "\\begin{".umgebung."}[]{}[]\n"
@@ -413,4 +445,7 @@ set timeoutlen=2500
 :au BufEnter *.tex,*.dtx,*.ltx :set isk+=58,46
 :au BufLeave *.tex,*.dtx,*.ltx :set isk-=58,46
 
+:au BufEnter *.tex,*.dtx,*.ltx,*.bib :cd %:p:h
 
+
+" vim:tw=2048 encoding=latin1
